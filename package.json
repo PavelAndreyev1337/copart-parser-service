@@ -1,0 +1,19 @@
+{
+  "name": "copart-parser-service",
+  "version": "1.0.0",
+  "description": "Service for parsing data about the car by reference.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PavelAndreyev1337/copart-parser-service.git"
+  },
+  "author": "Pavel Andreyev <pavel.andreyev.98@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PavelAndreyev1337/copart-parser-service/issues"
+  },
+  "homepage": "https://github.com/PavelAndreyev1337/copart-parser-service#readme"
+}
