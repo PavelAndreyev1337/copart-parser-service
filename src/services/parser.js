@@ -18,17 +18,19 @@ class CopartParser {
         })
         const carDetails = await page.evaluate((selector) => {
             let carDetails = {}
-            for (const property in selector) {
-                carDetails[property] = $(selector[property]).text().trim()
+            for (const section in selector) {
+                for (const property in selector[section])
+                    carDetails[property] = $(selector[section][property]).text().trim()
             }
-            carDetails.photos = location.host + $(selector.photos).attr('href').substring(1)
+            carDetails.photos = location.host + $(selector.carInformation.photos).attr('href').substring(1)
             return carDetails
         }, this.selector)
+        console.log(carDetails)
         await browser.close()
         return carDetails
     }
 }
 
-(new CopartParser('https://www.copart.com/lot/31731941', SELECTOR)).parse()
+(new CopartParser('https://www.copart.com/lot/36930930/salvage-2002-toyota-highlander-limited-va-danville', SELECTOR)).parse()
 
 module.exports = CopartParser
