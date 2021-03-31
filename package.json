@@ -4,7 +4,7 @@
   "description": "Service for parsing data about the car by reference.",
   "main": "index.js",
   "scripts": {
-    "parser": "node src/parser.js"
+    "parser": "node src/services/parser.js"
   },
   "repository": {
     "type": "git",
