@@ -19,8 +19,8 @@ class CopartParser {
     async downloadPhotos(page) {
         this.carDetails.timestamp = Date.now()
         const downloadPath = path.join(this.rootDownloadPath, this.carDetails.timestamp.toString())
-        const freeDiskSpace = await checkDiskSpace(downloadPath).free/Math.pow(2, 30)
-        if(freeDiskSpace >= 2){
+        const diskSpace = await checkDiskSpace(downloadPath)
+        if (diskSpace.free / Math.pow(2, 30) >= 2) {
             fs.mkdir(downloadPath, async err => {
                 if (err) {
                     console.log('Failed to create directory.')
