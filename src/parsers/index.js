@@ -6,7 +6,8 @@ const checkDiskSpace = require('check-disk-space')
 const DiskSpaceError = require('../errors/disk-space-error')
 
 class Parser {
-    constructor(execPath, link, selector, rootDownloadPath, downloadRateLimiter) {
+    constructor(headless, execPath, link, selector, rootDownloadPath, downloadRateLimiter) {
+        this.headless = headless
         this.execPath = execPath
         this.link = link
         this.selector = selector
@@ -55,7 +56,7 @@ class Parser {
     }
     async parse() {
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: this.headless,
             executablePath: this.execPath,
         })
         const page = await browser.newPage()
@@ -65,14 +66,12 @@ class Parser {
         this.carDetails = await page.evaluate(async selector => {
             let carDetails = {}
             for (const section in selector) {
-                if (!Array.isArray(typeof (selector[section])) && section !== 'photos') {
+                if (!Array.isArray(selector[section])) {
                     for (const property in selector[section]) {
-                        console.log($(selector[section][property]))
                         carDetails[property] = $(selector[section][property]).text().replace(/\s+/g, " ").trim()
                     }
                 }
             }
-            console.log(carDetails)
             const photoLink = $(selector.photos[selector.photos.length - 1]).attr('href').substring(1)
             carDetails.sourcePhotos = `${location.protocol}//${location.host}${photoLink}`
             window.scrollBy(0, window.innerHeight);
