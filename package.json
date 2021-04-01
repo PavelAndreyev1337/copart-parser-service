@@ -18,6 +18,7 @@
   "homepage": "https://github.com/PavelAndreyev1337/copart-parser-service#readme",
   "dependencies": {
     "adm-zip": "^0.5.5",
+    "check-disk-space": "^2.1.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "puppeteer": "^8.0.0"

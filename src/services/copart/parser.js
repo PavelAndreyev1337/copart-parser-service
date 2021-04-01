@@ -3,39 +3,54 @@ const SELECTOR = require('../../utils/copart/selector')
 const fs = require('fs')
 const path = require('path')
 const AdmZip = require('adm-zip')
+const checkDiskSpace = require('check-disk-space')
+const DiskSpaceError = require('../errors/disk-space-error')
 require('dotenv').config()
 
 class CopartParser {
-    constructor(execPath, link, selector, rootDownloadPath) {
+    constructor(execPath, link, selector, rootDownloadPath, downloadRateLimiter) {
         this.execPath = execPath
         this.link = link
         this.selector = selector
         this.rootDownloadPath = rootDownloadPath
         this.carDetails = {}
+        this.downloadRateLimiter = parseInt(downloadRateLimiter)
     }
     async downloadPhotos(page) {
         this.carDetails.timestamp = Date.now()
         const downloadPath = path.join(this.rootDownloadPath, this.carDetails.timestamp.toString())
-        fs.mkdir(downloadPath, async err => {
-            if (err) {
-                console.log('Failed to create directory.')
-            } else {
-                await page._client.send('Page.setDownloadBehavior', {
-                    behavior: 'allow',
-                    downloadPath: downloadPath
-                })
-                await page.click(this.selector.carInformation.photos)
-            }
-        })
-        this.carDetails.photos = downloadPath
+        const freeDiskSpace = await checkDiskSpace(downloadPath).free/Math.pow(2, 30)
+        if(freeDiskSpace >= 2){
+            fs.mkdir(downloadPath, async err => {
+                if (err) {
+                    console.log('Failed to create directory.')
+                } else {
+                    await page._client.send('Page.setDownloadBehavior', {
+                        behavior: 'allow',
+                        downloadPath: downloadPath
+                    })
+                    await page.click(this.selector.carInformation.photos)
+                }
+            })
+            this.carDetails.downloadPath = downloadPath
+        } else {
+            throw new DiskSpaceError('Not enough disk space on your hard drive.')
+        }
     }
     async extractPhotos() {
-        fs.readdir(this.carDetails.photos, (err, files) => {
+        fs.readdir(this.carDetails.downloadPath, (err, files) => {
             if (err)
                 console.log('Failed to find archive.')
             else {
-                const zip = new AdmZip(path.join(this.carDetails.photos, files[0]))
-                zip.extractAllTo(this.carDetails.photos)
+                this.carDetails.archive = path.join(this.carDetails.downloadPath, files[0])
+                const zip = new AdmZip(this.carDetails.archive)
+                zip.extractAllTo(this.carDetails.downloadPath)
+                this.carDetails.photos = []
+                zip.getEntries().forEach(zipEntry => {
+                    this.carDetails.photos.push(
+                        path.join(this.carDetails.downloadPath, zipEntry.entryName)
+                    )
+                })
             }
         })
     }
@@ -60,10 +75,11 @@ class CopartParser {
         }, this.selector)
         this.carDetails.link = this.link
         this.downloadPhotos(page)
-        await page.waitFor(5000);
-        this.extractPhotos()
-        await browser.close()
-        console.log(this.carDetails)
+        setTimeout(async () => {
+            this.extractPhotos()
+            await browser.close()
+            console.log(this.carDetails)
+        }, this.downloadRateLimiter)
         return this.carDetails
     }
 }
@@ -72,7 +88,8 @@ class CopartParser {
     process.env.EXEC_PATH,
     'https://www.copart.com/lot/36930930/salvage-2002-toyota-highlander-limited-va-danville',
     SELECTOR,
-    process.env.COPART_ROOT_DOWNLOAD_PATH
+    process.env.COPART_ROOT_DOWNLOAD_PATH,
+    process.env.DOWNLOAD_RATE_LIMITER
 )).parse()
 
 module.exports = CopartParser
