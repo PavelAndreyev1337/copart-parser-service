@@ -90,11 +90,13 @@ const SELECTOR = {
         > div.d-flex.flex-dir-col.lot-detail-section > div.p-0.lot-information.d-flex.f-g1 > div 
         > div.tab-content.f-g1.d-f > div.panel-content.clearfix.f-g1.d-flex-column.full-width 
         > div > div:nth-child(39) > div > div`,
-        photos: `#lot-details > div > div.container-fluid.lot-details-description > div > div 
+    },
+    photos: [
+        `#lot-details > div > div.container-fluid.lot-details-description > div > div 
         > div:nth-child(1) > div.col-lg-9.col-md-8.col-xs-12.image-location.p-0 > div.d-flex 
         > div.lot-images-section.p-0 > div.image-galleria_wrap > div.spZoomViewer 
         > div.view-all-pic > span.download-image > a`,
-    },
+    ],
     bidInformation: {
         currentBid: `#bid-information-id > div:nth-child(1) > div > div.bid-info-content > div 
         > div > div > div > div > div > div > div > div > form > div:nth-child(4) > div:nth-child(1) > span`,
