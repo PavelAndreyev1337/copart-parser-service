@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "Service for parsing data about the car by reference.",
   "main": "index.js",
-  "scripts": {
-    "parser": "node src/services/parser-service.js"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PavelAndreyev1337/copart-parser-service.git"
@@ -21,8 +19,10 @@
     "check-disk-space": "^2.1.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "mongoose": "^5.12.3",
     "puppeteer": "^8.0.0",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.1"
-  }
+  },
+  "devDependencies": {}
 }
