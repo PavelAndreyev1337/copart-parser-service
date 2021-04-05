@@ -6,7 +6,8 @@ const checkDiskSpace = require('check-disk-space')
 const DiskSpaceError = require('../errors/disk-space-error')
 
 class Parser {
-    constructor(headless, execPath, link, selector, rootDownloadPath, downloadRateLimiter) {
+    constructor(ip, headless, execPath, link, selector, rootDownloadPath, downloadRateLimiter, logger) {
+        this.ip = ip
         this.headless = headless
         this.execPath = execPath
         this.link = link
@@ -14,12 +15,15 @@ class Parser {
         this.rootDownloadPath = rootDownloadPath
         this.carDetails = {}
         this.downloadRateLimiter = parseInt(downloadRateLimiter)
+        this.logger = logger
     }
     async downloadPhotos(page) {
+        this.logger.info('Started downloading photos.', { label: this.link, ip: this.ip, })
         this.carDetails.timestamp = Date.now()
         const downloadPath = path.join(this.rootDownloadPath, this.carDetails.timestamp.toString())
         fs.access(downloadPath, async err => {
             if (err) {
+                this.logger.info('Create folder for photos.', { label: this.link, ip: this.ip, })
                 fs.mkdirSync(downloadPath, { recursive: true })
             }
             const diskSpace = await checkDiskSpace(downloadPath)
@@ -33,15 +37,18 @@ class Parser {
                 }
                 this.carDetails.downloadPath = downloadPath
             } else {
-                throw new DiskSpaceError('Not enough disk space on your hard drive.')
+                const message = 'Not enough disk space on your hard drive.'
+                this.logger.info(message, { label: this.link, ip: this.ip, })
+                throw new DiskSpaceError(message)
             }
         })
     }
     async extractPhotos() {
+        this.logger.info('Started extracting photos.', { label: this.link, ip: this.ip, })
         fs.readdir(this.carDetails.downloadPath, (err, files) => {
-            if (err)
-                console.log('Failed to find archive.')
-            else {
+            if (err) {
+                this.logger.error('Failed to find archive.', { label: this.link, ip: this.ip, })
+            } else {
                 this.carDetails.archive = path.join(this.carDetails.downloadPath, files[0])
                 const zip = new AdmZip(this.carDetails.archive)
                 zip.extractAllTo(this.carDetails.downloadPath)
@@ -55,35 +62,45 @@ class Parser {
         })
     }
     async parse() {
-        const browser = await puppeteer.launch({
-            headless: this.headless,
-            executablePath: this.execPath,
-        })
-        const page = await browser.newPage()
-        await page.goto(this.link, {
-            waitUntil: 'networkidle0',
-        })
-        this.carDetails = await page.evaluate(async selector => {
-            let carDetails = {}
-            for (const section in selector) {
-                if (!Array.isArray(selector[section])) {
-                    for (const property in selector[section]) {
-                        carDetails[property] = $(selector[section][property]).text().replace(/\s+/g, " ").trim()
+        this.logger.info('Started parsing.', { label: this.link, ip: this.ip, })
+        try {
+            const browser = await puppeteer.launch({
+                headless: this.headless,
+                executablePath: this.execPath,
+            })
+            const page = await browser.newPage()
+            await page.goto(this.link, {
+                waitUntil: 'networkidle0',
+            })
+            this.carDetails = await page.evaluate(async selector => {
+                let carDetails = {}
+                for (const section in selector) {
+                    if (!Array.isArray(selector[section])) {
+                        for (const property in selector[section]) {
+                            carDetails[property] = $(selector[section][property]).text().replace(/\s+/g, " ").trim()
+                        }
                     }
                 }
-            }
-            const photoLink = $(selector.photos[selector.photos.length - 1]).attr('href').substring(1)
-            carDetails.sourcePhotos = `${location.protocol}//${location.host}${photoLink}`
-            window.scrollBy(0, window.innerHeight);
-            return carDetails
-        }, this.selector)
-        this.carDetails.link = this.link
-        this.downloadPhotos(page)
-        setTimeout(async () => {
-            this.extractPhotos()
-            await browser.close()
-            console.log(this.carDetails)
-        }, this.downloadRateLimiter)
+                const photoLink = $(selector.photos[selector.photos.length - 1]).attr('href').substring(1)
+                carDetails.sourcePhotos = `${location.protocol}//${location.host}${photoLink}`
+                window.scrollBy(0, window.innerHeight);
+                return carDetails
+            }, this.selector)
+            this.carDetails.link = this.link
+            this.downloadPhotos(page)
+            setTimeout(async () => {
+                this.extractPhotos()
+                await browser.close()
+                console.log(this.carDetails)
+            }, this.downloadRateLimiter)
+        } catch (error) {
+            this.logger.error('Parsing failed.', {
+                label: this.link,
+                ip: this.ip,
+                error: error.message,
+            })
+            throw error
+        }
         return this.carDetails
     }
 }

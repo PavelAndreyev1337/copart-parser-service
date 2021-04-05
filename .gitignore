@@ -3,3 +3,4 @@ node_modules
 static
 src/public/copart
 src/public/iaai
+logs
