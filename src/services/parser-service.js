@@ -2,7 +2,6 @@ require('dotenv').config()
 const COPART_SELECTOR = require('../utils/copart/selector')
 const IAAI_SELECTOR = require('../utils/iaai/selector')
 const Parser = require('../parsers')
-const logger = require('../utils/logger')
 
 class ParserService {
     constructor(ip, logger) {
@@ -34,9 +33,5 @@ class ParserService {
         ).parse()
     }
 }
-
-const parserService = new ParserService(1, logger)
-parserService.parseIaai('https://www.iaai.com/vehicledetails/38823872?tenant=US&RowNumber=0')
-parserService.parseCopart('https://www.copart.com/lot/29800151')
 
 module.exports = ParserService

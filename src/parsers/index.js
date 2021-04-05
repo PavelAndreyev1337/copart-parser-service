@@ -17,7 +17,7 @@ class Parser {
         this.downloadRateLimiter = parseInt(downloadRateLimiter)
         this.logger = logger
     }
-    async downloadPhotos(page) {
+    async _downloadPhotos(page) {
         this.logger.info('Started downloading photos.', { label: this.link, ip: this.ip, })
         this.carDetails.timestamp = Date.now()
         const downloadPath = path.join(this.rootDownloadPath, this.carDetails.timestamp.toString())
@@ -43,7 +43,7 @@ class Parser {
             }
         })
     }
-    async extractPhotos() {
+    async _extractPhotos() {
         this.logger.info('Started extracting photos.', { label: this.link, ip: this.ip, })
         fs.readdir(this.carDetails.downloadPath, (err, files) => {
             if (err) {
@@ -87,9 +87,9 @@ class Parser {
                 return carDetails
             }, this.selector)
             this.carDetails.link = this.link
-            this.downloadPhotos(page)
+            this._downloadPhotos(page)
             setTimeout(async () => {
-                this.extractPhotos()
+                this._extractPhotos()
                 await browser.close()
                 console.log(this.carDetails)
             }, this.downloadRateLimiter)
