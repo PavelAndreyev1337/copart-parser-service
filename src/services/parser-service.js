@@ -1,15 +1,17 @@
-require('dotenv').config()
 const COPART_SELECTOR = require('../utils/copart/selector')
 const IAAI_SELECTOR = require('../utils/iaai/selector')
 const Parser = require('../parsers')
+const CopartCar = require('../models/copart-car')
+const IaaiCar = require('../models/iaai-car')
+
 
 class ParserService {
     constructor(ip, logger) {
         this.ip = ip
         this.logger = logger
     }
-    parseCopart(link) {
-        return new Parser(
+    async parseCopart(link) {
+        const carDetails = await new Parser(
             this.ip,
             false,
             process.env.EXEC_PATH,
@@ -19,9 +21,11 @@ class ParserService {
             process.env.DOWNLOAD_RATE_LIMITER,
             this.logger
         ).parse()
+        await new CopartCar(carDetails).save()
+        return carDetails
     }
-    parseIaai(link) {
-        return new Parser(
+    async parseIaai(link) {
+        const carDetails = await new Parser(
             this.ip,
             false,
             process.env.EXEC_PATH,
@@ -31,6 +35,8 @@ class ParserService {
             process.env.DOWNLOAD_RATE_LIMITER,
             this.logger
         ).parse()
+        await new IaaiCar(carDetails).save()
+        return carDetails
     }
 }
 

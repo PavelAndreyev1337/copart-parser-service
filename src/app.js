@@ -1,0 +1,21 @@
+const express = require('express')
+const path = require('path')
+require('dotenv').config()
+const logger = require('./utils/logger')
+const Database = require('./database')
+const carRouter = require('./routes/carRouter')
+const requestIp = require('./middlewares/request-ip')
+const notFound = require('./middlewares/not-found')
+const checkDiskSpace = require('./middlewares/check-disk-space')
+
+new Database(process.env.DB_URI, logger)
+
+const app = express()
+app.use(checkDiskSpace)
+app.use(requestIp)
+app.use(express.static(path.join(__dirname, 'public')))
+app.use('/', carRouter)
+app.use(notFound)
+app.listen(process.env.PORT, () => {
+    logger.info('Server has been started.', { label: 'app', })
+})
