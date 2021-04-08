@@ -32,8 +32,11 @@ class Parser {
                     behavior: 'allow',
                     downloadPath: downloadPath,
                 })
-                for (const stage of this.selector.photos) {
-                    page.click(stage)
+                for (const selector of this.selector.photos) {
+                    await page.waitForSelector(selector)
+                    if (await page.$(selector) !== null) {
+                        page.click(selector)
+                    }
                 }
             } else {
                 const message = 'Not enough disk space on your hard drive.'
@@ -58,7 +61,9 @@ class Parser {
                 )
             })
         } catch (err) {
-            this.logger.error('Failed to find archive.', { label: this.link, ip: this.ip, })
+            const message = 'Failed to find archive.'
+            this.logger.error(message, { label: this.link, ip: this.ip, })
+            throw new Error(message)
         }
     }
 
@@ -83,6 +88,11 @@ class Parser {
                         for (const property in selector[section]) {
                             carDetails[property] = $(selector[section][property]).text().replace(/\s+/g, " ").trim()
                         }
+                    }
+                }
+                for( var i = 0; i < selector.photos.length; i++){
+                    if (! $(selector.photos[i]).length) {
+                        selector.photos.splice(i, 1)
                     }
                 }
                 const photoLink = $(selector.photos[selector.photos.length - 1]).attr('href').substring(1)

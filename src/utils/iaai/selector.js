@@ -29,7 +29,9 @@ const SELECTOR = {
         photo: `#js-MoreActionDropdown > ul > li.dropdown-menu__item.dropdown-menu__item--download > a`,
     },
     photos: [
-        `a[onclick="javascript:GAForNewListingAndDetails('VehicleDetails Redesign', 'Download Images', 'Download Click');"]`,
+        `#js-DownloadImages`,
+        `#js-MoreActionDropdown > a`,
+        `#js-MoreActionDropdown > ul > li.dropdown-menu__item.dropdown-menu__item--download > a`,
     ],
     vechicleDescription: {
         vinStatus: `#waypoint-trigger > div.tile-body > ul > li:contains("VIN (Status):") > span:nth-child(2)`,
