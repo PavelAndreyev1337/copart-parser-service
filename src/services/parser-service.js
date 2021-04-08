@@ -16,7 +16,7 @@ class ParserService {
             logger
         )
     }
-    async parseCopart(link, baseUrl) {
+    async parseCopart(link) {
         this.parser.baseUrl += '/copart'
         const carDetails = await this.parser.parse(
             link,
@@ -26,7 +26,7 @@ class ParserService {
         await new CopartCar(carDetails).save()
         return carDetails
     }
-    async parseIaai(link, baseUrl) {
+    async parseIaai(link) {
         this.parser.baseUrl += '/iaai'
         const carDetails = await this.parser.parse(
             link,

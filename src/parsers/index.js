@@ -90,11 +90,6 @@ class Parser {
                         }
                     }
                 }
-                for( var i = 0; i < selector.photos.length; i++){
-                    if (! $(selector.photos[i]).length) {
-                        selector.photos.splice(i, 1)
-                    }
-                }
                 const photoLink = $(selector.photos[selector.photos.length - 1]).attr('href').substring(1)
                 carDetails.sourcePhotos = `${location.protocol}//${location.host}/${photoLink}`
                 window.scrollBy(0, window.innerHeight);
@@ -105,16 +100,16 @@ class Parser {
             await page.waitForTimeout(this.downloadRateLimiter)
             await this._extractPhotos(downloadPath)
         } catch (error) {
-            this.logger.error('Parsing failed.', {
+            const message = 'Parsing failed.'
+            this.logger.error(message, {
                 label: this.link,
                 ip: this.ip,
                 error: error.message,
             })
-            throw error
+            throw new Error(message)
         } finally {
             await this.browser.close()
         }
-        console.log(this.carDetails)
         return this.carDetails
     }
 }
