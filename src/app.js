@@ -15,7 +15,7 @@ new Database(process.env.DB_URI, logger)
 const app = express()
 app.use(queue({ activeLimit: 2, queuedLimit: -1 }));
 app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 app.use(requestIp)
 app.use(checkDiskSpace)
 app.use(express.static(path.join(__dirname, 'public')))

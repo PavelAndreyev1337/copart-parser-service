@@ -25,11 +25,11 @@ const SELECTOR = {
         odometer: `body > section > main > section > div > div.data-container > div 
         > div > div > div.tile-body > ul > li:contains("Odometer:") > span.data-list__value`,
         airbags: `body > section > main > section > div > div.data-container > div > div 
-        > div > div.tile-body > ul > li:contains("Airbags:") > span.data-list__value`
+        > div > div.tile-body > ul > li:contains("Airbags:") > span.data-list__value`,
+        photo: `#js-MoreActionDropdown > ul > li.dropdown-menu__item.dropdown-menu__item--download > a`,
     },
     photos: [
-        `#js-MoreActionDropdown > a`,
-        `#js-MoreActionDropdown > ul > li.dropdown-menu__item.dropdown-menu__item--download > a`,
+        `a[onclick="javascript:GAForNewListingAndDetails('VehicleDetails Redesign', 'Download Images', 'Download Click');"]`,
     ],
     vechicleDescription: {
         vinStatus: `#waypoint-trigger > div.tile-body > ul > li:contains("VIN (Status):") > span:nth-child(2)`,

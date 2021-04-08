@@ -42,9 +42,10 @@ const iaaiCarSchema = new Schema({
     sourcePhotos: String,
     link: String,
     timestamp: Number,
-    downloadPath: String,
     archive: String,
-    photos: [String]
+    photos: [String],
 })
+
+iaaiCarSchema.set('timestamps', true)
 
 module.exports = model('IaaiCar', iaaiCarSchema)

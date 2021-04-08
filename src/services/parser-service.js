@@ -6,35 +6,33 @@ const IaaiCar = require('../models/iaai-car')
 
 
 class ParserService {
-    constructor(ip, logger) {
-        this.ip = ip
-        this.logger = logger
-    }
-    async parseCopart(link) {
-        const carDetails = await new Parser(
-            this.ip,
+    constructor(ip, baseUrl, logger) {
+        this.parser = new Parser(
+            ip,
+            baseUrl,
             false,
             process.env.EXEC_PATH,
+            process.env.DOWNLOAD_RATE_LIMITER,
+            logger
+        )
+    }
+    async parseCopart(link, baseUrl) {
+        this.parser.baseUrl += '/copart'
+        const carDetails = await this.parser.parse(
             link,
             COPART_SELECTOR,
-            process.env.COPART_ROOT_DOWNLOAD_PATH,
-            process.env.DOWNLOAD_RATE_LIMITER,
-            this.logger
-        ).parse()
+            process.env.COPART_ROOT_DOWNLOAD_PATH
+        )
         await new CopartCar(carDetails).save()
         return carDetails
     }
-    async parseIaai(link) {
-        const carDetails = await new Parser(
-            this.ip,
-            false,
-            process.env.EXEC_PATH,
+    async parseIaai(link, baseUrl) {
+        this.parser.baseUrl += '/iaai'
+        const carDetails = await this.parser.parse(
             link,
             IAAI_SELECTOR,
-            process.env.IAAI_ROOT_DOWNLOAD_PATH,
-            process.env.DOWNLOAD_RATE_LIMITER,
-            this.logger
-        ).parse()
+            process.env.IAAI_ROOT_DOWNLOAD_PATH
+        )
         await new IaaiCar(carDetails).save()
         return carDetails
     }

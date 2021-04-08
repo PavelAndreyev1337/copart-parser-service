@@ -29,9 +29,10 @@ const copartCarSchema = new Schema({
     sourcePhotos: String,
     link: String,
     timestamp: Number,
-    downloadPath: String,
     archive: String,
-    photos: [String]
+    photos: [String],
 })
+
+copartCarSchema.set('timestamps', true)
 
 module.exports = model('CopartCar', copartCarSchema)
