@@ -1,0 +1,18 @@
+{
+    "apps": [
+        {
+            "name": "Parser",
+            "script": "./src/app.js",
+            "node_args": "-r dotenv/config",
+            "env": {
+                "DISPLAY": ":99"
+            }
+        },
+        {
+            "name": "Xvfb",
+            "interpreter": "none",
+            "script": "Xvfb",
+            "args": ":99"
+        }
+    ]
+}
