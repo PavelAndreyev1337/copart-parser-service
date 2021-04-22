@@ -1,5 +1,5 @@
 # Copart parser service 🚘
-Service for parsing data about copart and IAAI car by reference.
+Service for parsing data about copart and IAAI cars by reference.
 
 ## How run service locally
 * clone repository
