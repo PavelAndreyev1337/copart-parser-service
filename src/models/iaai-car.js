@@ -1,6 +1,10 @@
 const { Schema, model } = require('mongoose')
 
 const iaaiCarSchema = new Schema({
+    title: String,
+    year: String,
+    make: String,
+    model: String,
     stock: String,
     sellingBranch: String,
     vin: String,
