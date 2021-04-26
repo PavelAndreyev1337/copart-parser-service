@@ -1,5 +1,7 @@
 const SELECTOR = {
     carInformation: {
+        title: `#lot-details > div > div.container-fluid.lot-details-header > div 
+        > div > div.col-md-7.col-sm-12.clearfix.lot-details-heading.p-0.mb-5 > div:nth-child(1) > h1`,
         lot: `#lot-details > div > div.container-fluid.lot-details-description 
         > div > div > div:nth-child(1) > div.col-lg-9.col-md-8.col-xs-12.image-location.p-0 
         > div.d-flex > div.d-flex.flex-dir-col.lot-detail-section 
