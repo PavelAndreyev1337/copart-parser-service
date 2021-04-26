@@ -87,6 +87,22 @@ class Parser {
                     if (!Array.isArray(selector[section])) {
                         for (const property in selector[section]) {
                             carDetails[property] = $(selector[section][property]).text().replace(/\s+/g, " ").trim()
+                            if (property === 'title') {
+                                const titleParts = $(selector[section][property]).text().split(/\s+/g)
+                                for (i = 0; i < titleParts.length; i++) {
+                                    if (i === 0) {
+                                        carDetails.year = titleParts[i]
+                                    } else if (i === 1) {
+                                        carDetails.make = titleParts[i]
+                                    } else {
+                                        if (!carDetails.hasOwnProperty('model')) {
+                                            carDetails.model = ''
+                                        }
+                                        carDetails.model += `${titleParts[i]} `
+                                    }
+                                }
+                                carDetails.model.trimEnd()
+                            }
                         }
                     }
                 }

@@ -1,6 +1,10 @@
 const { Schema, model } = require('mongoose')
 
 const copartCarSchema = new Schema({
+    title: String,
+    year: String,
+    make: String,
+    model: String,
     lot: String,
     vin: String,
     doc_type: String,

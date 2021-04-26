@@ -1,5 +1,6 @@
 const SELECTOR = {
     vehicleInformation: {
+        title: `body > section > main > section.section.section--vehicle-title > div > div > h1`,
         stock: `body > section > main > section > div > div.data-container > div 
         > div > div > div.tile-body > ul > li:contains("Stock #:") 
         > span.data-list__value > strong`,
